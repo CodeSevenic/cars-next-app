@@ -1,23 +1,95 @@
 model Classified {
-  id             String         @id @default(cuid())
-  views          Int            @default(0)
-  slug           String         @unique
+  id             String           @id @default(cuid())
+  views          Int              @default(0)
+  slug           String           @unique
   vrm            String?
   title          String?
   description    String?
+  status         ClassifiedStatus @default(DRAFT)
   year           Int
-  odoReading     Int            @default(0) @map("odo_reading")
-  doors          Int            @default(2)
-  seats          Int            @default(5)
-  price          Int            @default(0) @map("price")
-  makeId         String         @map("make_id")
-  make           Make           @relation(fields: [makeId], references: [id])
-  modelId        String         @map("model_id")
-  model          Model          @relation(fields: [modelId], references: [id])
-  modelVariantId Int            @map("model_variant_id")
-  modelVariant   ModelVariant?  @relation(fields: [modelVariantId], references: [id])
-  ulezCompliance ULEZCompliance @default(EXEMPT)
-  transmission   Transmission   @default(MANUAL)
+  odoReading     Int              @default(0) @map("odo_reading")
+  doors          Int              @default(2)
+  seats          Int              @default(5)
+  price          Int              @default(0) @map("price")
+  makeId         String           @map("make_id")
+  make           Make             @relation(fields: [makeId], references: [id])
+  modelId        String           @map("model_id")
+  model          Model            @relation(fields: [modelId], references: [id])
+  modelVariantId Int              @map("model_variant_id")
+  modelVariant   ModelVariant?    @relation(fields: [modelVariantId], references: [id])
+  ulezCompliance ULEZCompliance   @default(EXEMPT)
+  transmission   Transmission     @default(MANUAL)
+  colour         Colour           @default(BLACK)
+  fuelType       FuelType         @default(PETROL)
+  bodyType       BodyType         @default(SEDAN)
+  odoUnit        OdoUnit          @default(MILES)
+  currency       CurrencyCode     @default(GBP)
+  images         Image[]
+  customers      Customer[]
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
 
+  @@index([makeId, modelId], name: "index_make_model")
+  @@index([status], name: "index_status")
+  @@index([price], name: "index_price")
   @@map("classifieds")
+}
+
+enum ClassifiedStatus {
+  LIVE
+  DRAFT
+  SOLD
+}
+
+enum CurrencyCode {
+  GBP
+  USD
+  EUR
+  ZAR
+}
+
+enum Transmission {
+  MANUAL
+  AUTOMATIC
+}
+
+enum ULEZCompliance {
+  EXEMPT
+  NON_EXEMPT
+}
+
+enum BodyType {
+  SEDAN
+  HATCHBACK
+  SUV
+  MPV
+  COUPE
+  CONVERTIBLE
+  VAN
+  WAGON
+  PICKUP
+  BUS
+  TRUCK
+  TRACTOR
+  OTHER
+}
+
+enum OdoUnit {
+  MILES
+  KILOMETERS
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  ELECTRIC
+  HYBRID
+}
+
+enum Colour {
+  RED
+  BLUE
+  GREEN
+  YELLOW
+  BLACK
 }
