@@ -1,0 +1,23 @@
+model Classified {
+  id             String         @id @default(cuid())
+  views          Int            @default(0)
+  slug           String         @unique
+  vrm            String?
+  title          String?
+  description    String?
+  year           Int
+  odoReading     Int            @default(0) @map("odo_reading")
+  doors          Int            @default(2)
+  seats          Int            @default(5)
+  price          Int            @default(0) @map("price")
+  makeId         String         @map("make_id")
+  make           Make           @relation(fields: [makeId], references: [id])
+  modelId        String         @map("model_id")
+  model          Model          @relation(fields: [modelId], references: [id])
+  modelVariantId Int            @map("model_variant_id")
+  modelVariant   ModelVariant?  @relation(fields: [modelVariantId], references: [id])
+  ulezCompliance ULEZCompliance @default(EXEMPT)
+  transmission   Transmission   @default(MANUAL)
+
+  @@map("classifieds")
+}
