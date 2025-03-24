@@ -1,5 +1,5 @@
 model Classified {
-  id             String           @id @default(cuid())
+  id             Int              @id @default(autoincrement())
   views          Int              @default(0)
   slug           String           @unique
   vrm            String?
@@ -11,9 +11,9 @@ model Classified {
   doors          Int              @default(2)
   seats          Int              @default(5)
   price          Int              @default(0) @map("price")
-  makeId         String           @map("make_id")
+  makeId         Int              @map("make_id")
   make           Make             @relation(fields: [makeId], references: [id])
-  modelId        String           @map("model_id")
+  modelId        Int              @map("model_id")
   model          Model            @relation(fields: [modelId], references: [id])
   modelVariantId Int              @map("model_variant_id")
   modelVariant   ModelVariant?    @relation(fields: [modelVariantId], references: [id])
