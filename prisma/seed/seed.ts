@@ -1,8 +1,13 @@
-import { PrismaClient } from '@prisma/client/extension';
+import { PrismaClient } from '@prisma/client';
+import { seedTaxonomy } from './taxonomy.seed';
 
 const prisma = new PrismaClient();
 
-async function main() {}
+async function main() {
+  console.log('Seeding database...');
+  await seedTaxonomy(prisma);
+  console.log('Database seeded successfully.');
+}
 
 main()
   .catch((e) => {
