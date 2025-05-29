@@ -69,7 +69,7 @@ export async function seedTaxonomy(prisma: PrismaClient) {
     }
   }
 
-  console.log({ result });
+  // console.log({ result });
 
   const makePromises = Object.entries(result).map(([name]) => {
     return prisma.make.upsert({
@@ -140,6 +140,53 @@ export async function seedTaxonomy(prisma: PrismaClient) {
     async (batch) => {
       const models = await Promise.all(batch);
       console.log(`Seeded batch of ${models.length} models 🌱`);
+    }
+  );
+
+  const variantPromises: Prisma.Prisma__ModelVariantClient<unknown, unknown>[] = [];
+
+  for (const make of makes) {
+    const models = await prisma.model.findMany({
+      where: {
+        makeId: make.id,
+      },
+    });
+
+    for (const model of models) {
+      for (const [variant, year_range] of Object.entries(result[make.name][model.name].variants)) {
+        variantPromises.push(
+          prisma.modelVariant.upsert({
+            where: {
+              modelId_name: {
+                name: variant,
+                modelId: model.id,
+              },
+            },
+            update: {
+              name: variant,
+            },
+            create: {
+              name: variant,
+              yearStart: year_range.yearStart,
+              yearEnd: year_range.yearEnd,
+              model: {
+                connect: {
+                  id: model.id,
+                },
+              },
+            },
+          })
+        );
+      }
+    }
+  }
+
+  await insertInBatches<Prisma.Prisma__ModelVariantClient<unknown, unknown>>(
+    variantPromises,
+    BATCH_SIZE,
+    async (batch) => {
+      const variants = await Promise.all(batch);
+      console.log(`Seeded batch of ${variants.length} variants 🌱`);
     }
   );
 }

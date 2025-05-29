@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding database...');
+  await prisma.$executeRaw`TRUNCATE TABLE "makes" RESTART IDENTITY CASCADE`;
   await seedTaxonomy(prisma);
   console.log('Database seeded successfully.');
 }
