@@ -10,6 +10,8 @@ type Rows = {
   yearEnd: number;
 };
 
+const BATCH_SIZE = 100;
+
 export async function seedTaxonomy(prisma: PrismaClient) {
   const rows = await new Promise<Rows[]>((resolve, reject) => {
     const eachRow: Rows[] = [];
@@ -131,4 +133,13 @@ export async function seedTaxonomy(prisma: PrismaClient) {
       await insertFunction(batch);
     }
   }
+
+  await insertInBatches<Prisma.Prisma__ModelClient<unknown, unknown>>(
+    modelPromises,
+    BATCH_SIZE,
+    async (batch) => {
+      const models = await Promise.all(batch);
+      console.log(`Seeded batch of ${models.length} models 🌱`);
+    }
+  );
 }
